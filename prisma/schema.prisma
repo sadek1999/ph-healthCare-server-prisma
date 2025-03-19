@@ -18,8 +18,8 @@ model User {
   email              String     @unique
   password           String
   role               userRole
-  needPasswordChange Boolean
-  status             userStatus
+  needPasswordChange Boolean @default(true)
+  status             userStatus @default(active)
   createdAt          DateTime   @default(now())
   updatedAt          DateTime   @updatedAt
 
