@@ -1,43 +1,43 @@
-import { Admin, userRole } from "@prisma/client";
+import { Admin, userRole, userStatus } from "@prisma/client";
+import prisma from "../../../shared/prisma";
 import * as bcrypt from 'bcrypt';
 import { Request } from "express";
-import prisma from "../../../shared/prisma";
 
+const createAdmin = async (req: Request): Promise<Admin> => {
+  const hashedPassword = await bcrypt.hash(req.body.password, 12);
 
+  // ✅ Prepare user data (only required fields)
+  const userData = {
+    email: req.body.email,
+    password: hashedPassword,
+    role: userRole.admin, // ✅ Correct enum usage for userRole
+    // needPasswordChange: false, // ✅ Manually override if needed
+    // status: userStatus.active, // ✅ Correct enum usage for userStatus
+  };
 
-const createAdmin=async(req:Request):Promise<Admin>=>{
-   
+  const result = await prisma.$transaction(async (transactionClient) => {
+    // ✅ Create the User first
+    await transactionClient.user.create({
+      data: userData,
+    });
 
-    const hasPassword=await bcrypt.hash(req.body.password,12);
-    const userData ={
-        email:req.body.email,
-        password:hasPassword,
-       role:userRole.admin
+    // ✅ Create the Admin and maintain the relation via email
+    const createdAdmin = await transactionClient.admin.create({
+      data: {
+        name: req.body.name,
+        email: req.body.email,           // ✅ Critical for relation
+        profilePhoto: req.body.profilePhoto || null, // ✅ Optional field, set null if not provided
+        contactNumber: req.body.contactNumber,
+        // isDeleted, createdAt, updatedAt will be set by Prisma defaults
+      },
+    });
 
+    return createdAdmin;
+  });
 
-    }
+  return result;
+};
 
-    const result= await prisma.$transaction(async(transactionClient)=>{
-
-        await transactionClient.user.create({
-            data:userData
-        })
-
-        const createAdmin=await transactionClient.admin.create({
-            data:req.body
-        })
-
-        return createAdmin;
-    })
-    return result;
-
-    }
-
-    const getUsers=async(req:Request)=>{
-        console.log("from userService")
-    }
-
-export const userService={
-    createAdmin,
-    getUsers,
-}
+export const userService = {
+  createAdmin,
+};
