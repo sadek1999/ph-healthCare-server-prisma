@@ -2,7 +2,7 @@ import { Admin } from "@prisma/client";
 
 
 
-const getAdminFromDB=async(req:any,res:any)=>{
+const getAllFromDB=async(req:any,res:any)=>{
     return res;
 }
 const getByIdFromDB =async(id:string)=>{
@@ -17,7 +17,7 @@ console.log('delete for db')
 }
 
 export const adminService={
-    getAdminFromDB,
+    getAllFromDB,
     getByIdFromDB,
     deleteFromDB,
 }

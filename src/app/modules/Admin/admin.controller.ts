@@ -3,14 +3,10 @@ import { adminService } from "./admin.service"
 
 
 
-const createAdmin=async(req:Request,res:Response)=>{
+const getAllFromDB=async()
 
-    const result= await adminService.
-
-
-}
 
 export const adminController={
-  createAdmin,
+
     
 }
