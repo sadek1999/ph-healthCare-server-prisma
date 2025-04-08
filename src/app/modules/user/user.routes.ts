@@ -9,7 +9,8 @@ const router=express.Router()
 
 
 router.post('/createAdmin',userController.createAdmin);
-router.get("/",userController.getUsers)
+
+router.get("/",userController.getAllUserFromDB)
 
 
       

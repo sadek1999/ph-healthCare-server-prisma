@@ -10,7 +10,7 @@ import { Response } from "express";
     message:string,
     meta?:{
         page:number,
-        lime:number,
+        limit:number,
         total:number,
     },
     data:T|null|undefined;

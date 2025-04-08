@@ -17,11 +17,17 @@ const createAdmin=async(req:Request,res:Response)=>{
     })
 
 }
-const getUsers=async(req:Request,res:Response)=>{
-  const result = await userService.getUsers(req)
+const getAllUserFromDB=async(req:Request,res:Response)=>{
+    const result= await userService.getAllFromDB();
+    sendResponse(res,{
+        statusCode:httpStatus.OK,
+        success:true,
+        message:'get all users',
+        data:result,
+    })
 }
 
 export const userController={
     createAdmin,
-    getUsers,
+   getAllUserFromDB,
 }
