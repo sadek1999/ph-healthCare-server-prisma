@@ -3,14 +3,14 @@ import * as bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { jwtHelper } from "../../../helpars/jwtHelper";
 import { userStatus } from "@prisma/client";
-
+import config from "../../../config";
 
 
 const userLogin = async (payload: { email: string; password: string }) => {
   const user = await prisma.user.findUniqueOrThrow({
     where: {
       email: payload.email,
-      status:userStatus.active,
+      status: userStatus.active,
     },
   });
 
@@ -22,9 +22,17 @@ const userLogin = async (payload: { email: string; password: string }) => {
     throw new Error("password can not match");
   }
 
-  const accessToken = jwtHelper.generateToken({email:user.email,role:user.role},'abcdef','2d')
+  const accessToken = jwtHelper.generateToken(
+    { email: user.email, role: user.role },
+    config.jwt.jwt_secret as string,
+    config.jwt.expire_in as string
+  );
 
-  const refreshToken = jwtHelper.generateToken({email:user.email,role:user.role},'abcdefgh','30d')
+  const refreshToken = jwtHelper.generateToken(
+    { email: user.email, role: user.role },
+    config.jwt.refresh_token_secret as string,
+     config.jwt.refresh_toke_expires_in as string,
+  );
   return {
     accessToken,
     refreshToken,
@@ -33,34 +41,33 @@ const userLogin = async (payload: { email: string; password: string }) => {
   };
 };
 
-const refreshToken=async(token:any)=>{
-    
-    let decoded
+const refreshToken = async (token: any) => {
+  let decoded;
 
-    try{
-     decoded=jwtHelper.verifyToken(token,'abcdefgh');
-    
-    }
-    catch(err){
-      throw new Error('password can not match...')
-    }
-    
+  try {
+    decoded = jwtHelper.verifyToken(token, "abcdefgh");
+  } catch (err) {
+    throw new Error("password can not match...");
+  }
 
-    const user=await prisma.user.findUniqueOrThrow({
-      where:{
-        email:decoded.email,
-        status:userStatus.active
-      }
-    })
-   
-    const accessToken = jwtHelper.generateToken({email:user.email,role:user.role},'abcdef','2d')
+  const user = await prisma.user.findUniqueOrThrow({
+    where: {
+      email: decoded.email,
+      status: userStatus.active,
+    },
+  });
 
-    return {
-      accessToken,
-      needPasswordChange:user.needPasswordChange,
-    };
+  const accessToken = jwtHelper.generateToken(
+    { email: user.email, role: user.role },
+    config.jwt.jwt_secret as string  ,
+     config.jwt.expire_in as string
+  );
 
-}
+  return {
+    accessToken,
+    needPasswordChange: user.needPasswordChange,
+  };
+};
 
 export const authService = {
   userLogin,
