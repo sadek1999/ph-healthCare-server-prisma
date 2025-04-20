@@ -63,13 +63,26 @@ const refreshToken = async (token: any) => {
      config.jwt.expire_in as string
   );
 
+ 
+
   return {
     accessToken,
     needPasswordChange: user.needPasswordChange,
   };
 };
 
+
+const changePassword= async()=>{
+
+}
+
+const forgatPassword=async()=>{
+
+}
+
 export const authService = {
   userLogin,
   refreshToken,
+  changePassword,
+  forgatPassword,
 };
