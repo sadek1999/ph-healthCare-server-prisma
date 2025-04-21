@@ -8,4 +8,6 @@ const router = express.Router();
 
 router.get("/", auth(userRole.admin,userRole.superAdmin), adminController.getAllFromDB);
 
+
+
 export const adminRoute = router;

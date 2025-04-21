@@ -64,8 +64,14 @@ const deleteFromDB = async (id: string) => {
   console.log("delete for db");
 };
 
+const softDeleteFromDB = async (id: string) => {};
+
 export const adminService = {
   getAllFromDB,
   getByIdFromDB,
   deleteFromDB,
+
+  updateIntoDB,
+
+  softDeleteFromDB,
 };

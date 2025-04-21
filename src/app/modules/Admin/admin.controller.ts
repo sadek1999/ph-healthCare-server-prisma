@@ -24,8 +24,56 @@ const getAllFromDB :RequestHandler=catchAsync(async(req:Request,res:Response)=>{
     })
 })
 
+const getByIdFromDB=catchAsync(async(req:Request,res:Response)=>{
+  const {id}=req.params;
+  const result= await adminService.getByIdFromDB(id)
+  sendResponse(res,{
+    success:true,
+    statusCode:httpStatus.OK,
+    message:'',
+    data:result
+  })
+})
+
+const updateIntoDB=catchAsync(async(req:Request,res:Response)=>{
+  const {id}=req.params;
+  const result= await adminService.getByIdFromDB(id)
+  sendResponse(res,{
+    success:true,
+    statusCode:httpStatus.OK,
+    message:'',
+    data:result
+  })
+})
+
+const deleteFromDB=catchAsync(async(req:Request,res:Response)=>{
+  const {id}=req.params;
+  const result= await adminService.getByIdFromDB(id)
+  sendResponse(res,{
+    success:true,
+    statusCode:httpStatus.OK,
+    message:'',
+    data:result
+  })
+})
+
+const softDeleteFromDB=catchAsync(async(req:Request,res:Response)=>{
+  const {id}=req.params;
+  const result= await adminService.getByIdFromDB(id)
+  sendResponse(res,{
+    success:true,
+    statusCode:httpStatus.OK,
+    message:'',
+    data:result
+  })
+})
+
 
 export const adminController={
 
     getAllFromDB,
+    getByIdFromDB,
+    updateIntoDB,
+    deleteFromDB,
+    softDeleteFromDB
 }
