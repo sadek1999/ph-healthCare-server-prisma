@@ -37,6 +37,12 @@ const createAdmin = async (req: Request): Promise<Admin> => {
   return result;
 };
 
+const createDoctor = async()=>{
+
+}
+
+const  createPatient = async()=>{}
+
 const getAllFromDB=async()=>{
 
 
@@ -44,7 +50,20 @@ const getAllFromDB=async()=>{
   return getAll;
 }
 
+const changeProfileStatus=async()=>{
+
+}
+
+const getMyProfile=async()=>{}
+
+const updateMyProfile=async()=>{}
+
 export const userService = {
   createAdmin,
+  createDoctor,
+  createPatient,
   getAllFromDB,
+  changeProfileStatus,
+  getMyProfile,
+  updateMyProfile
 };
