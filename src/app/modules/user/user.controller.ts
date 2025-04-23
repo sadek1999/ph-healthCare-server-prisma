@@ -5,8 +5,10 @@ import httpStatus from "http-status";
 
 
 const createAdmin=async(req:Request,res:Response)=>{
-
-    const result=await userService.createAdmin(req);
+  
+console.log(req.file)
+    // const result=await userService.createAdmin();
+    const result=null
     
     sendResponse(res,{
         statusCode:httpStatus.OK,

@@ -1,4 +1,4 @@
-import { Admin, Prisma } from "@prisma/client";
+import { Admin, Prisma, userStatus } from "@prisma/client";
 import prisma from "../../../shared/prisma";
 import { IAdminFilterRequest } from "./admin.interface";
 import { IPaginationOptions } from "../../interfaces/pagination";
@@ -54,17 +54,79 @@ const getAllFromDB = async (
   };
 };
 const getByIdFromDB = async (id: string) => {
-  console.log("get single admin");
+  const result = await prisma.admin.findUniqueOrThrow({
+    where: {
+      id: id,
+      isDeleted: false,
+    },
+  });
+
+  return result;
 };
 
 const updateIntoDB = async (id: string, data: Partial<Admin>) => {
-  console.log("update inot db");
-};
-const deleteFromDB = async (id: string) => {
-  console.log("delete for db");
+  //  find the admin
+  const adminInfo = await prisma.admin.findUniqueOrThrow({
+    where: {
+      id,
+      isDeleted: false,
+    },
+  });
+  let updatedData;
+  //update the admin if find that
+  if (adminInfo) {
+    updatedData = await prisma.admin.update({
+      where: {
+        id,
+      },
+      data,
+    });
+  }
+
+  return updatedData;
 };
 
-const softDeleteFromDB = async (id: string) => {};
+const deleteFromDB = async (id: string) => {
+  await prisma.admin.findUniqueOrThrow({
+    where: { id, isDeleted: false },
+  });
+
+  const result = await prisma.$transaction(async ($transactionClient) => {
+    const adminDeleted = await $transactionClient.admin.delete({
+      where: { id },
+    });
+
+    await $transactionClient.user.delete({
+      where: { id },
+    });
+    return adminDeleted;
+  });
+  return result;
+};
+
+const softDeleteFromDB = async (id: string) => {
+
+   await prisma.admin.findUniqueOrThrow({
+    where:{id,isDeleted:false}
+   })
+
+   const result= await prisma.$transaction(async($transactionClient)=>{
+
+    const adminSoftDeleted=await $transactionClient.admin.update({
+      where:{id}
+      ,data:{isDeleted:true}
+    })
+
+    await $transactionClient.user.update({
+      where:{id},
+      data:{status:userStatus.blocked}
+    })
+    return adminSoftDeleted;
+   })
+
+  
+  return result;
+};
 
 export const adminService = {
   getAllFromDB,

@@ -18,12 +18,14 @@ model User {
   email              String     @unique
   password           String
   role               userRole
-  needPasswordChange Boolean @default(true)
+  needPasswordChange Boolean    @default(true)
   status             userStatus @default(active)
   createdAt          DateTime   @default(now())
   updatedAt          DateTime   @updatedAt
 
-  admin Admin?
+  admin   Admin?
+  Patient Patient?
+  Doctor  Doctor?
 
   @@map("users")
 }
@@ -34,7 +36,7 @@ model Admin {
   email         String   @unique
   profilePhoto  String?
   contactNumber String
-  isDeleted     Boolean @default(false)
+  isDeleted     Boolean  @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -43,9 +45,73 @@ model Admin {
   @@map("admins")
 }
 
+model Doctor {
+  id                  String              @id @default(uuid())
+  name                String
+  email               String              @unique
+  profilePhoto        String?
+  contactNumber       String
+  address             String
+  registrationNumber  String
+  experience          Int                 @default(0)
+  gender              Gender
+  appointmentFee      Int
+  qualification       String
+  currentWorkingPlace String
+  designation         String
+  isDeleted           Boolean             @default(true)
+  averageRating       Float
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  doctorSpecialties   DoctorSpecialties[]
+
+  user User @relation(fields: [email], references: [email])
+
+  @@map("doctors")
+}
+
+model Specialties {
+  id                String              @id @default(uuid())
+  title             String
+  icon              String?
+  doctorSpecialties DoctorSpecialties[]
+
+  @@map("specialties")
+}
+
+model DoctorSpecialties {
+  specialtiesId String
+  Specialties   Specialties @relation(fields: [specialtiesId], references: [id])
+  doctorId      String
+  doctor        Doctor      @relation(fields: [doctorId], references: [id])
+
+  @@id([specialtiesId, doctorId])
+}
+
+model Patient {
+  id            String   @id @default(uuid())
+  name          String
+  email         String   @unique
+  profilePhoto  String?
+  contactNumber String
+  address       String
+  isDeleted     Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user User @relation(fields: [email], references: [email])
+
+  @@map("patents")
+}
+
 enum userStatus {
   active
   blocked
+}
+
+enum Gender {
+  Male
+  Female
 }
 
 enum userRole {
