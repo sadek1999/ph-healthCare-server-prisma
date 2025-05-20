@@ -30,40 +30,40 @@ const getByIdFromDB=catchAsync(async(req:Request,res:Response)=>{
   sendResponse(res,{
     success:true,
     statusCode:httpStatus.OK,
-    message:'',
+    message:'find the user successfully',
     data:result
   })
 })
 
 const updateIntoDB=catchAsync(async(req:Request,res:Response)=>{
   const {id}=req.params;
-  const result= await adminService.getByIdFromDB(id)
+  const result= await adminService.updateIntoDB(id,req.body)
   sendResponse(res,{
     success:true,
     statusCode:httpStatus.OK,
-    message:'',
+    message:'successfully update the user',
     data:result
   })
 })
 
 const deleteFromDB=catchAsync(async(req:Request,res:Response)=>{
   const {id}=req.params;
-  const result= await adminService.getByIdFromDB(id)
+  const result= await adminService.deleteFromDB(id);
   sendResponse(res,{
     success:true,
     statusCode:httpStatus.OK,
-    message:'',
+    message:'successfully delete the admin',
     data:result
   })
 })
 
 const softDeleteFromDB=catchAsync(async(req:Request,res:Response)=>{
   const {id}=req.params;
-  const result= await adminService.getByIdFromDB(id)
+  const result= await adminService.softDeleteFromDB(id);
   sendResponse(res,{
     success:true,
     statusCode:httpStatus.OK,
-    message:'',
+    message:'successfully softDeleted the admin',
     data:result
   })
 })

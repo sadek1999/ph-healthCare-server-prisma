@@ -1,3 +1,5 @@
+import { Doctor } from "@prisma/client";
+import prisma from "../../../shared/prisma"
 
 
 const getAllFromDB=async()=>{
@@ -7,11 +9,17 @@ const getAllFromDB=async()=>{
     //find all data 
 
 }
-const getByIdFromDB=async()=>{
-    //find by the id 
+const getByIdFromDB=async(id:string)=>{
+   const result=await prisma.doctor.findUniqueOrThrow({
+    where:{id,isDeleted:false}
+   }) 
+   return result;
 }
-const updateIntoDB=async()=>{
+const updateIntoDB=async(id:string,data:Partial<Doctor>)=>{
     //find the doctor by id 
+    await prisma.doctor.findUniqueOrThrow({
+        where:{id,isDeleted:false}
+    })
 
     // update the about doctor in doctor table 
     // update specialty in specialty table(use transaction)
