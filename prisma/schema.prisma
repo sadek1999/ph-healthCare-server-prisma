@@ -19,7 +19,7 @@ model User {
   password           String
   role               userRole
   needPasswordChange Boolean    @default(true)
-  status             userStatus @default(active)
+  status             userStatus @default(Active)
   createdAt          DateTime   @default(now())
   updatedAt          DateTime   @updatedAt
 
@@ -65,7 +65,9 @@ model Doctor {
   updatedAt           DateTime            @updatedAt
   doctorSpecialties   DoctorSpecialties[]
 
-  user User @relation(fields: [email], references: [email])
+  user            User              @relation(fields: [email], references: [email])
+  DoctorsSchedule DoctorsSchedule[]
+  Appointment     Appointment[]
 
   @@map("doctors")
 }
@@ -99,14 +101,130 @@ model Patient {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  user User @relation(fields: [email], references: [email])
+  user              User               @relation(fields: [email], references: [email])
+  patientHealthData patientHealthData?
+  medicalReport     medicalReport[]
+  Appointment       Appointment[]
 
   @@map("patents")
 }
 
+model patientHealthData {
+  id                  String        @id @default(uuid())
+  patientId           String        @unique
+  patient             Patient       @relation(fields: [patientId], references: [id])
+  dateOfBirth         DateTime
+  gender              gender
+  bloodGroup          bloodGroup
+  hasAllergies        Boolean?      @default(false)
+  hasDiabetes         Boolean?      @default(false)
+  height              String
+  weight              String
+  smokingStatus       Boolean?      @default(false)
+  dietaryPreferences  String?
+  pregnancyStatus     Boolean?      @default(false)
+  mentalHealthHistory String?
+  immunizationStatus  String?
+  hasPastSurgeries    Boolean?      @default(false)
+  recentAnxiety       Boolean?      @default(false)
+  recentDepression    Boolean?      @default(false)
+  maritalStatus       maritalStatus @default(Unmarried)
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+
+  @@map("patient_health_datas")
+}
+
+model medicalReport {
+  id         String   @id @default(uuid())
+  patientId  String
+  patient    Patient  @relation(fields: [patientId], references: [id])
+  reportName String
+  reportLink String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("medical_reports")
+}
+
+model Schedule {
+  id              String            @id @default(uuid())
+  startDate       DateTime
+  endData         DateTime
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  DoctorsSchedule DoctorsSchedule[]
+
+  @@map("schedules")
+}
+
+model DoctorsSchedule {
+  doctorId String
+  doctor   Doctor @relation(fields: [doctorId], references: [id])
+
+  scheduleId String
+  schedule   Schedule @relation(fields: [scheduleId], references: [id])
+
+  isBlocked     Boolean  @default(false)
+  appointmentId String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@id([doctorId, scheduleId])
+  @@map("doctors_schedules")
+}
+
+model Appointment {
+  id             String            @id @default(uuid())
+  patientId      String
+  patient        Patient           @relation(fields: [patientId], references: [id])
+  doctorId       String
+  doctor         Doctor            @relation(fields: [doctorId], references: [id])
+  videoCallingId String
+  status         appointmentStatus
+  paymentStatus  paymentStatus
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  @@map("appointments")
+}
+
+enum appointmentStatus {
+  SCHEDULED
+  INPROGRESS
+  COMPLETED
+  CANCELED
+}
+
+enum paymentStatus {
+  Paid
+  Unpaid
+}
+
+enum maritalStatus {
+  Married
+  Unmarried
+}
+
+enum gender {
+  Male
+  Female
+}
+
+enum bloodGroup {
+  A_POSITIVE
+  B_POSITIVE
+  O_POSITIVE
+  AB_POSITIVE
+  A_NEGATIVE
+  B_NEGATIVE
+  O_NEGATIVE
+  AB_NEGATIVE
+}
+
 enum userStatus {
-  active
-  blocked
+  Active
+  Blocked
 }
 
 enum Gender {
