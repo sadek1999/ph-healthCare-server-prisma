@@ -1,62 +1,88 @@
-import { Admin, userRole, userStatus } from "@prisma/client";
+import { Admin, Doctor, Patient, userRole } from "@prisma/client";
 import prisma from "../../../shared/prisma";
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from "bcrypt";
 import { Request } from "express";
 
 const createAdmin = async (req: Request): Promise<Admin> => {
+  console.log(req.body);
   const hashedPassword = await bcrypt.hash(req.body.password, 12);
 
-  //   user data 
+  //   user data
   const userData = {
-    email: req.body.email,
+    email: req.body.admin.email,
     password: hashedPassword,
-    role: userRole.admin, 
-   
+    role: userRole.admin,
   };
-
+  
   const result = await prisma.$transaction(async (transactionClient) => {
-    //  Create the User first
+    //create user
     await transactionClient.user.create({
       data: userData,
     });
-
-    // Create the Admin and maintain the relation via email
+    //create Admin
     const createdAdmin = await transactionClient.admin.create({
-      data: {
-        name: req.body.name,
-        email: req.body.email,           // Critical for relation
-        profilePhoto: req.body.profilePhoto || null, // Optional field, set null if not provided
-        contactNumber: req.body.contactNumber,
-        // isDeleted, createdAt, updatedAt will be set by Prisma defaults
-      },
+      data: req.body.admin,
     });
-
     return createdAdmin;
   });
 
   return result;
 };
 
-const createDoctor = async()=>{
+const createDoctor = async (req:Request):Promise<Doctor> => {
+  //hase the password
+  const hashedPassword= await bcrypt.hash(req.body.password, 12);
 
-}
+  const userData={
+    email:req.body.doctor.email,
+    password:hashedPassword,
+    role:userRole.doctor
+  }
+  const result = await prisma.$transaction(async(transactionClient)=>{
+    await transactionClient.user.create({
+      data:userData,
+    });
+    const createdDoctorData= await transactionClient.doctor.create({
+      data:req.body.doctor
+    })
+    return createdDoctorData;
+  })
 
-const  createPatient = async()=>{}
+  return result;
+};
 
-const getAllFromDB=async()=>{
+const createPatient = async (req:Request):Promise<Patient> => {
+  const hashedPassword= await bcrypt.hash(req.body.password,12);
 
+  const userData ={
+    email:req.body.patient.email,
+    password:hashedPassword,
+    role:userRole.patient
+  }
 
-  const getAll= await prisma.user.findMany({})
+  const result = await prisma.$transaction(async(transactionClient)=>{
+    await transactionClient.user.create({
+      data:userData
+    })
+    const createdPatientData= await transactionClient.patient.create({
+      data:req.body.patient,
+    })
+    return createdPatientData
+  })
+  return result;
+
+};
+
+const getAllFromDB = async () => {
+  const getAll = await prisma.user.findMany({});
   return getAll;
-}
+};
 
-const changeProfileStatus=async()=>{
+const changeProfileStatus = async () => {};
 
-}
+const getMyProfile = async () => {};
 
-const getMyProfile=async()=>{}
-
-const updateMyProfile=async()=>{}
+const updateMyProfile = async () => {};
 
 export const userService = {
   createAdmin,
@@ -65,5 +91,5 @@ export const userService = {
   getAllFromDB,
   changeProfileStatus,
   getMyProfile,
-  updateMyProfile
+  updateMyProfile,
 };

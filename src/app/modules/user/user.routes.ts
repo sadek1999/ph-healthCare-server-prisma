@@ -18,32 +18,7 @@ const router = express.Router();
 //patch route for status update
 // patch for  update-my-profile
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cd) {
-    cd(null, path.join(process.cwd(), "uploads"));
-  },
-  filename: function (req, file, cd) {
-    cd(null, file.originalname);
-  },
-});
-
-
-const upload = multer({ storage: storage });
-
-router.post("/img"
-    , upload.single('file')
-    , (req, res) => {
-        console.log('file:',req.file); // should not be undefined
-        console.log('body:', req.body);
-        // res.send("Uploaded");
-});
-console.log(path.join(process.cwd(), "uploads"));
-
-router.post(
-  "/createAdmin",
-  //   upload.single('file'),
-  userController.createAdmin
-);
+router.post("/createAdmin", userController.createAdmin);
 
 router.get("/", userController.getAllFromDB);
 

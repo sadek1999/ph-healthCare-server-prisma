@@ -7,6 +7,8 @@ const getAllFromDB=async()=>{
     // take the search by data 
     // take doctorWhereInput type array in andCondition
     //find all data 
+    const result= await prisma.doctor.findMany();
+    return result;
 
 }
 const getByIdFromDB=async(id:string)=>{

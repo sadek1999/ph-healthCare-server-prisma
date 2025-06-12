@@ -6,12 +6,12 @@ import httpStatus from "http-status";
 
 const createAdmin=async(req:Request,res:Response)=>{
   
-console.log(req.file)
-    // const result=await userService.createAdmin();
-    const result=null
+
+    const result=await userService.createAdmin(req);
+   
     
     sendResponse(res,{
-        statusCode:httpStatus.OK,
+        statusCode:httpStatus.CREATED,
         success:true,
         message:'admin created successfully',
         data:result
